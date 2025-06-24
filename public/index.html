@@ -1,0 +1,2037 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Client-Device Management Dashboard</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            /* Modern color palette */
+            --primary-color: #4f46e5;
+            --primary-hover: #4338ca;
+            --primary-light: rgba(79, 70, 229, 0.1);
+            --secondary-color: #f43f5e;
+            --success-color: #10b981;
+            --warning-color: #f59e0b;
+            --danger-color: #ef4444;
+            --info-color: #0ea5e9;
+            
+            /* Neutral colors */
+            --light-bg: #f9fafb;
+            --card-bg: #ffffff;
+            --dark-text: #111827;
+            --muted-text: #6b7280;
+            --border-color: #e5e7eb;
+            
+            /* Layout */
+            --border-radius-sm: 0.375rem;
+            --border-radius: 0.75rem;
+            --border-radius-lg: 1rem;
+            --box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.08), 0 4px 6px -2px rgba(0, 0, 0, 0.01);
+            --box-shadow-lg: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+        }
+        
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background-color: #f3f4f6;
+            color: var(--dark-text);
+            font-size: 0.95rem;
+            line-height: 1.5;
+        }
+        
+        h1, h2, h3, h4, h5, h6, .h1, .h2, .h3, .h4, .h5, .h6 {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            font-weight: 600;
+            letter-spacing: -0.025em;
+        }
+        
+        /* Dashboard layout */
+        .dashboard-container {
+            max-width: 1440px;
+            margin: 1.5rem auto;
+            padding: 0 1.5rem;
+        }
+        
+        /* Header styling */
+        .page-header {
+            background: linear-gradient(135deg, var(--primary-color), #818cf8);
+            color: white;
+            border-radius: var(--border-radius-lg);
+            box-shadow: var(--box-shadow-lg);
+            padding: 2.5rem;
+            margin-bottom: 2rem;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .page-header::before {
+            content: '';
+            position: absolute;
+            top: -50px;
+            right: -50px;
+            width: 300px;
+            height: 300px;
+            background: rgba(255, 255, 255, 0.08);
+            border-radius: 50%;
+            z-index: 0;
+        }
+        
+        .page-header::after {
+            content: '';
+            position: absolute;
+            bottom: -80px;
+            left: 15%;
+            width: 250px;
+            height: 250px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 50%;
+            z-index: 0;
+        }
+        
+        .header-content {
+            position: relative;
+            z-index: 1;
+        }
+        
+        .page-title {
+            margin-bottom: 0.5rem;
+            font-size: 1.875rem;
+            font-weight: 700;
+        }
+        
+        .subtitle {
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 1.05rem;
+            font-weight: 400;
+        }
+        
+        /* Card styling */
+        .content-card {
+            background-color: var(--card-bg);
+            border-radius: var(--border-radius-lg);
+            box-shadow: var(--box-shadow);
+            padding: 0;
+            margin-bottom: 2rem;
+            overflow: hidden;
+            border: 1px solid rgba(0, 0, 0, 0.05);
+        }
+        
+        .card-header {
+            padding: 1.25rem 1.75rem;
+            border-bottom: 1px solid var(--border-color);
+            background-color: #fcfcfd;
+        }
+        
+        .card-body {
+            padding: 1.75rem;
+        }
+        
+        /* Button styles */
+        .btn {
+            font-weight: 500;
+            font-size: 0.925rem;
+            padding: 0.625rem 1.25rem;
+            border-radius: 0.5rem;
+            transition: all 0.2s ease;
+        }
+        
+        .btn-primary {
+            background-color: var(--primary-color);
+            border-color: var(--primary-color);
+            box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+        }
+        
+        .btn-primary:hover {
+            background-color: var(--primary-hover);
+            border-color: var(--primary-hover);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        }
+        
+        .btn-primary:focus {
+            box-shadow: 0 0 0 0.25rem rgba(79, 70, 229, 0.4);
+        }
+        
+        /* Status badge styles */
+        .status-badge {
+            font-size: 0.75rem;
+            padding: 0.35rem 0.75rem;
+            border-radius: 9999px;
+            font-weight: 500;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.25rem;
+            box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+        }
+        
+        .status-active {
+            background-color: rgba(16, 185, 129, 0.1);
+            color: var(--success-color);
+        }
+        
+        .status-inactive {
+            background-color: rgba(239, 68, 68, 0.1);
+            color: var(--danger-color);
+        }
+        
+        .status-pending {
+            background-color: rgba(245, 158, 11, 0.1);
+            color: var(--warning-color);
+        }
+        
+        .status-maintenance {
+            background-color: rgba(245, 158, 11, 0.1);
+            color: var(--warning-color);
+        }
+        
+        /* Search input styling */
+        .search-wrapper {
+            position: relative;
+            width: 100%;
+            max-width: 350px;
+        }
+        
+        .search-icon {
+            position: absolute;
+            top: 50%;
+            left: 1rem;
+            transform: translateY(-50%);
+            color: var(--muted-text);
+            font-size: 0.9rem;
+            z-index: 1;
+            pointer-events: none;
+        }
+        
+        .search-input {
+            padding: 0.7rem 1rem 0.7rem 2.5rem;
+            border-radius: 0.75rem;
+            border: 1px solid var(--border-color);
+            background-color: var(--light-bg);
+            width: 100%;
+            transition: all 0.2s ease;
+            font-size: 0.925rem;
+        }
+        
+        .search-input:focus {
+            box-shadow: 0 0 0 2px rgba(79, 70, 229, 0.2);
+            border-color: var(--primary-color);
+            outline: none;
+        }
+        
+        /* Filter buttons */
+        .filter-buttons {
+            background-color: var(--light-bg);
+            border-radius: 0.75rem;
+            padding: 0.25rem;
+            display: inline-flex;
+            gap: 0.25rem;
+            border: 1px solid var(--border-color);
+        }
+        
+        .filter-buttons .btn {
+            border-radius: 0.5rem;
+            padding: 0.45rem 1.15rem;
+            font-size: 0.8rem;
+            color: var(--muted-text);
+            border: none;
+            font-weight: 500;
+        }
+        
+        .filter-buttons .btn.active {
+            background-color: var(--primary-color);
+            color: white;
+            box-shadow: 0 2px 5px rgba(79, 70, 229, 0.3);
+        }
+        
+        /* Table styling */
+        .table-container {
+            overflow-x: auto;
+            padding: 0.5rem;
+        }
+        
+        .styled-table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+        }
+        
+        .styled-table thead th {
+            padding: 1rem 1.5rem;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 0.025em;
+            font-weight: 600;
+            color: var(--muted-text);
+            background-color: #f9fafb;
+            border-bottom: 1px solid var(--border-color);
+            text-align: left;
+        }
+        
+        .styled-table tbody td {
+            padding: 1rem 1.5rem;
+            vertical-align: middle;
+            border-bottom: 1px solid var(--border-color);
+        }
+        
+        .styled-table tbody tr:hover td {
+            background-color: #f9fafb;
+        }
+        
+        /* Client/Device display */
+        .client-name, .device-name {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+        
+        .client-avatar {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, var(--primary-color), #818cf8);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 1rem;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+        
+        .device-icon {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, var(--info-color), #38bdf8);
+            color: white;
+            border-radius: 0.75rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.1rem;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+        
+        /* Action buttons */
+        .action-buttons {
+            display: flex;
+          
+            gap: 0.5rem;
+        }
+        
+        .action-buttons .btn {
+            width: 36px;
+            height: 36px;
+            padding: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 0.5rem;
+            transition: all 0.2s ease;
+            background-color: #f9fafb;
+            border: 1px solid var(--border-color);
+            color: var(--muted-text);
+        }
+        
+        .action-buttons .btn:hover {
+            transform: translateY(-2px);
+            background-color: var(--light-bg);
+        }
+        
+        .btn-view:hover {
+            color: var(--info-color);
+            border-color: var(--info-color);
+            background-color: rgba(14, 165, 233, 0.1);
+        }
+        
+        .btn-edit:hover {
+            color: var(--primary-color);
+            border-color: var(--primary-color);
+            background-color: rgba(79, 70, 229, 0.1);
+        }
+        
+        .btn-delete:hover {
+            color: var(--danger-color);
+            border-color: var(--danger-color);
+            background-color: rgba(239, 68, 68, 0.1);
+        }
+        
+        /* Text styles */
+        .client-email, .client-phone {
+            color: var(--muted-text);
+            font-size: 0.85rem;
+        }
+        
+        .client-email {
+            margin-bottom: 0.15rem;
+        }
+        
+        .client-id, .device-id {
+            font-family: 'SF Mono', 'Monaco', 'Consolas', monospace;
+            font-size: 0.75rem;
+            font-weight: 500;
+            background: var(--light-bg);
+            padding: 0.35rem 0.75rem;
+            border-radius: 0.5rem;
+            color: var(--muted-text);
+            border: 1px solid var(--border-color);
+        }
+        
+        .ip-address {
+            font-family: 'SF Mono', 'Monaco', 'Consolas', monospace;
+            font-size: 0.85rem;
+            color: var(--muted-text);
+        }
+        
+        
+        /* Modal styling */
+        .modal-content {
+            border-radius: var(--border-radius-lg);
+            border: none;
+            box-shadow: var(--box-shadow-lg);
+            overflow: hidden;
+        }
+        
+        .modal-header {
+            background: linear-gradient(135deg, var(--primary-color), #818cf8);
+            color: white;
+            padding: 1.5rem;
+            border: none;
+        }
+        
+        .modal-title {
+            font-weight: 600;
+            font-size: 1.25rem;
+        }
+        
+        .modal-body {
+            padding: 1.75rem;
+        }
+        
+        .modal-footer {
+            padding: 1.25rem 1.5rem;
+            border-top: 1px solid var(--border-color);
+            background-color: var(--light-bg);
+        }
+        
+        /* Form controls */
+        .form-label {
+            font-weight: 500;
+            color: var(--dark-text);
+            margin-bottom: 0.5rem;
+            font-size: 0.9rem;
+        }
+        
+        .form-control, .form-select {
+            padding: 0.7rem 1rem;
+            border-radius: 0.5rem;
+            border: 1px solid var(--border-color);
+            font-size: 0.925rem;
+            transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+        }
+        
+        .form-control:focus, .form-select:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.25);
+            outline: none;
+        }
+        
+        .input-group-text {
+            background-color: #f9fafb;
+            border-color: var(--border-color);
+            color: var(--muted-text);
+        }
+        
+        /* Cancel button */
+        .btn-cancel {
+            background-color: #f3f4f6;
+            border: 1px solid var(--border-color);
+            color: var(--muted-text);
+            font-weight: 500;
+        }
+        
+        .btn-cancel:hover {
+            background-color: #e5e7eb;
+            color: var(--dark-text);
+        }
+        
+        /* Empty state */
+        .empty-state {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 4rem 1rem;
+            text-align: center;
+        }
+        
+        .empty-icon {
+            font-size: 3rem;
+            color: #d1d5db;
+            margin-bottom: 1.5rem;
+        }
+        
+        .empty-title {
+            font-weight: 600;
+            font-size: 1.5rem;
+            margin-bottom: 0.75rem;
+            color: var(--dark-text);
+        }
+        
+        .empty-description {
+            color: var(--muted-text);
+            margin-bottom: 2rem;
+            max-width: 400px;
+        }
+        
+        /* Tabs */
+        .nav-tabs {
+            border: none;
+            margin-bottom: 2rem;
+            background-color: var(--light-bg);
+            border-radius: 0.75rem;
+            padding: 0.35rem;
+            display: inline-flex;
+            gap: 0.25rem;
+        }
+        
+        .nav-tabs .nav-link {
+            border: none;
+            border-radius: 0.5rem;
+            padding: 0.65rem 1.25rem;
+            font-weight: 500;
+            color: var(--muted-text);
+            transition: all 0.2s ease;
+        }
+        
+        .nav-tabs .nav-link.active {
+            background-color: var(--primary-color);
+            color: white;
+            box-shadow: 0 2px 5px rgba(79, 70, 229, 0.3);
+        }
+        
+        .nav-tabs .nav-link:hover:not(.active) {
+            color: var(--dark-text);
+            background-color: rgba(0, 0, 0, 0.05);
+        }
+        
+        /* Responsive adjustments */
+        @media (max-width: 991px) {
+            .dashboard-container {
+                padding: 0 1rem;
+                margin: 1rem auto;
+            }
+            
+            .page-header {
+                padding: 1.75rem;
+                margin-bottom: 1.5rem;
+            }
+            
+            .search-wrapper, .filter-buttons {
+                width: 100%;
+            }
+            
+            .tools-row {
+                flex-direction: column;
+                gap: 1rem;
+                align-items: flex-start !important;
+            }
+            
+            .filter-buttons {
+                width: 100%;
+                justify-content: space-between;
+            }
+            
+            .nav-tabs {
+                width: 100%;
+                justify-content: space-between;
+            }
+            
+            .nav-tabs .nav-item {
+                flex: 1;
+                text-align: center;
+            }
+            
+            .nav-tabs .nav-link {
+                width: 100%;
+            }
+        }
+        
+        @media (max-width: 576px) {
+            .page-header {
+                padding: 1.5rem;
+            }
+            
+            .card-header, .card-body {
+                padding: 1.25rem;
+            }
+            
+            .auth-buttons {
+                margin-top: 1rem;
+                display: flex;
+                width: 100%;
+            }
+            
+            .auth-buttons .btn {
+                flex: 1;
+            }
+            
+            .header-content {
+                flex-direction: column;
+                align-items: flex-start !important;
+            }
+            
+            .table-container {
+                padding: 0;
+            }
+            
+            .styled-table thead th, 
+            .styled-table tbody td {
+                padding: 0.75rem;
+            }
+        }
+
+        .device-id {
+  display: inline-block;
+  padding: 0.35rem 0.75rem;
+  background-color: rgba(99, 102, 241, 0.1);
+  color: #4f46e5;
+  border-radius: 0.375rem;
+  font-weight: 500;
+  font-size: 0.875rem;
+  transition: all 0.2s ease;
+  text-decoration: none;
+}
+
+.device-id:hover {
+  background-color: rgba(99, 102, 241, 0.15);
+  color: #4338ca;
+  transform: translateY(-1px);
+}
+    </style>
+</head>
+<body>
+    <div class="dashboard-container">
+        <!-- Header section with gradient background -->
+        <div class="page-header">
+            <div class="header-content d-flex justify-content-between align-items-center">
+                <div>
+                    <h1 class="page-title">Client-Device Management System</h1>
+                    <p class="subtitle">Track and manage your clients and devices efficiently</p>
+                </div>
+                <div class="auth-buttons">
+                    <button type="button" class="btn btn-primary me-2" data-bs-toggle="modal" data-bs-target="#changePasswordModal">
+                        <i class="bi bi-key me-2"></i>Change Password
+                    </button>
+                    <button id="logoutBtn" class="btn btn-primary">
+                        <i class="bi bi-box-arrow-right me-2"></i>Logout
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Navigation tabs -->
+        <ul class="nav nav-tabs mb-4">
+            <li class="nav-item">
+                <a class="nav-link active" href="#clientsPanel" data-bs-toggle="tab">Client Management</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="#devicesPanel" data-bs-toggle="tab">Device Management</a>
+            </li>
+        </ul>
+
+        <!-- Tab content -->
+        <div class="tab-content">
+            <!-- Clients panel -->
+            <div class="tab-pane fade show active" id="clientsPanel">
+                <!-- Content card -->
+                <div class="content-card">
+                    <div class="card-header">
+    <div class="d-flex justify-content-between align-items-center flex-wrap gap-3 tools-row">
+        <div class="search-wrapper">
+            <i class="bi bi-search search-icon"></i>
+            <input type="text" id="searchInput" class="form-control search-input" placeholder="Search for a client...">
+        </div>
+        <div class="filter-buttons">
+            <button type="button" class="btn active" id="filterAll">All</button>
+            <button type="button" class="btn" id="filterActive">Active</button>
+            <button type="button" class="btn" id="filterPending">Pending</button>
+            <button type="button" class="btn" id="filterInactive">Inactive</button>
+        </div>
+        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addClientModal">
+            <i class="bi bi-plus-lg me-2"></i>Add New Client
+        </button>
+    </div>
+</div>
+                    
+                    <div class="table-container">
+   <table class="styled-table">
+  <thead>
+    <tr>
+      <th>ID</th>
+      <th>Client Name</th>
+      <th>Contact Info</th>
+      <th>Status</th>
+      <th>IMEI</th>
+      <th>Actions</th>
+    </tr>
+  </thead>
+  <tbody id="clientTableBody">
+    <!-- Client data will be loaded here -->
+  </tbody>
+</table>
+                        
+                        <!-- Empty state message -->
+                        <div id="noClientsMessage" class="empty-state d-none">
+                            <div class="empty-icon">
+                                <i class="bi bi-people"></i>
+                            </div>
+                            <h4 class="empty-title">No clients found</h4>
+                            <p class="empty-description">Start by adding your first client</p>
+                            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addClientModal">
+                                <i class="bi bi-plus-lg me-2"></i>Add New Client
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Devices panel -->
+            <!-- Update the device table structure in the devices panel -->
+<div class="tab-pane fade" id="devicesPanel">
+    <div class="d-flex justify-content-between align-items-center flex-wrap gap-3 tools-row">
+        <div class="search-box">
+            <i class="bi bi-search"></i>
+            <input type="text" id="deviceSearchInput" class="search-input" placeholder="Search devices...">
+        </div>
+       
+        <div class="filter-buttons">
+            <button id="deviceFilterAll" class="btn btn-sm btn-filter active">All</button>
+            <button id="deviceFilterActive" class="btn btn-sm btn-filter">Active</button>
+            <button id="deviceFilterMaintenance" class="btn btn-sm btn-filter">Pending</button>
+            <button id="deviceFilterInactive" class="btn btn-sm btn-filter">Inactive</button>
+        </div>
+
+        
+        <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addDeviceModal">
+            <i class="bi bi-plus-lg me-1"></i> Add New Device
+        </button>
+    </div>
+    
+    <div class="table-container">
+        <table class="styled-table">
+            <thead>
+                <tr>
+                    <th>IMEI</th>
+                    <th>Device Name</th>
+                    <th>Concentration</th>
+                    <th>Alarm Level</th>
+                    <th>Gas Level</th>
+                    <th>Unit</th>
+                    <th>UTC</th>
+                    <th>Local Time</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody id="deviceTableBody">
+                <!-- Device data will be loaded here -->
+            </tbody>
+        </table>
+        
+        <!-- Empty state message -->
+        <div id="noDevicesMessage" class="empty-state d-none">
+            <div class="empty-state-icon">
+                <i class="bi bi-hdd-network"></i>
+            </div>
+            <h3>No Devices Found</h3>
+            <p>You haven't added any devices yet. Click the button below to add your first device.</p>
+            <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addDeviceModal">
+                <i class="bi bi-plus-lg me-1"></i> Add New Device
+            </button>
+        </div>
+    </div>
+</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Client Modal -->
+    <div class="modal fade" id="addClientModal" tabindex="-1" aria-labelledby="addClientModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="addClientModalLabel">Add New Client</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="addClientForm">
+                        <div class="mb-3">
+                            <label for="clientName" class="form-label">Client Name</label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="bi bi-person"></i></span>
+                                <input type="text" class="form-control" id="clientName" placeholder="Enter client name" required>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="clientEmail" class="form-label">Email Address</label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="bi bi-envelope"></i></span>
+                                <input type="email" class="form-control" id="clientEmail" placeholder="Enter email address" required>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="clientPhone" class="form-label">Phone Number</label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="bi bi-telephone"></i></span>
+                                <input type="tel" class="form-control" id="clientPhone" placeholder="Enter phone number">
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="clientStreet" class="form-label">Address</label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="bi bi-geo-alt"></i></span>
+                                <input type="text" class="form-control" id="clientStreet" placeholder="Enter street address">
+                            </div>
+                        </div>
+                        <!-- Replace the device dropdown with a text input in the addClientModal -->
+
+                 <div class="mb-3">
+                 <label for="clientDevice" class="form-label">Associated Device</label>
+                   <div class="input-group">
+               <span class="input-group-text"><i class="bi bi-hdd-network"></i></span>
+                 <input type="text" class="form-control" id="clientDevice" placeholder="Enter device ID (optional)">
+                </div>
+             </div>
+                        <div class="mb-3">
+                            <label for="clientStatus" class="form-label">Status</label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="bi bi-tag"></i></span>
+                                <select class="form-select" id="clientStatus">
+                                    <option value="active">Active</option>
+                                    <option value="pending">Pending</option>
+                                    <option value="inactive">Inactive</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="clientPassword" class="form-label">Password</label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="bi bi-lock"></i></span>
+                                <input type="password" class="form-control" id="clientPassword" placeholder="Leave blank for default" value="Megha@9000">
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-cancel" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-primary" id="saveClientBtn">Save Client</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Device Modal -->
+    <!-- Update the Add Device Modal -->
+<div class="modal fade" id="addDeviceModal" tabindex="-1" aria-labelledby="addDeviceModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="addDeviceModalLabel">Add New Device</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="addDeviceForm">
+                    <div class="mb-3">
+                        <label for="deviceImei" class="form-label">IMEI</label>
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="bi bi-upc"></i></span>
+                            <input type="text" class="form-control" id="deviceImei" placeholder="Enter device IMEI" required>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="deviceName" class="form-label">Device Name</label>
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="bi bi-hdd"></i></span>
+                            <input type="text" class="form-control" id="deviceName" placeholder="Enter device name" required>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="deviceConcentration" class="form-label">Concentration</label>
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="bi bi-bar-chart-fill"></i></span>
+                            <input type="number" step="0.01" class="form-control" id="deviceConcentration" placeholder="0.00">
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="deviceAlarmLevel" class="form-label">Alarm Level</label>
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="bi bi-exclamation-triangle"></i></span>
+                            <select class="form-select" id="deviceAlarmLevel">
+                                <option value="normal">Normal</option>
+                                <option value="warning">Warning</option>
+                                <option value="danger">Danger</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="deviceGasLevel" class="form-label">Gas Level</label>
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="bi bi-droplet-fill"></i></span>
+                            <input type="number" step="0.01" class="form-control" id="deviceGasLevel" placeholder="0.00">
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="deviceUnit" class="form-label">Unit</label>
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="bi bi-rulers"></i></span>
+                            <select class="form-select" id="deviceUnit">
+                                <option value="ppm">ppm</option>
+                                <option value="ppb">ppb</option>
+                                <option value="mg/m³">mg/m³</option>
+                            </select>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" id="saveDeviceBtn">Save Device</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+    <!-- Client Added Success Modal -->
+    <div class="modal fade" id="successModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Client Added Successfully</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body text-center">
+                    <div class="mb-4">
+                        <i class="bi bi-check-circle text-success" style="font-size: 3rem;"></i>
+                    </div>
+                    <h4>Client <span id="newClientNameDisplay" class="fw-bold"></span> has been added</h4>
+                    <p class="text-muted mb-3">The client was assigned the following device ID:</p>
+                    <div class="d-inline-block bg-light p-3 rounded mb-3">
+                        <span id="newDeviceIdDisplay" class="fw-bold font-monospace"></span>
+                    </div>
+                    <p class="small text-muted">This ID is automatically generated for each client and can be used for reference.</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Continue</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Change Password Modal -->
+    <div class="modal fade" id="changePasswordModal" tabindex="-1" aria-labelledby="changePasswordModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="changePasswordModalLabel">Change Password</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="changePasswordForm">
+                        <div class="mb-3">
+                            <label for="currentPassword" class="form-label">Current Password</label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="bi bi-lock"></i></span>
+                                <input type="password" class="form-control" id="currentPassword" placeholder="Enter current password" required>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="newPassword" class="form-label">New Password</label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="bi bi-key"></i></span>
+                                <input type="password" class="form-control" id="newPassword" placeholder="Enter new password" required>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="confirmPassword" class="form-label">Confirm Password</label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="bi bi-key-fill"></i></span>
+                                <input type="password" class="form-control" id="confirmPassword" placeholder="Confirm new password" required>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-cancel" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-primary" id="savePasswordBtn">Save Password</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Session Expiry Warning Modal -->
+    <div class="modal fade" id="sessionExpiryModal" tabindex="-1" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Session Expiring</h5>
+                </div>
+                <div class="modal-body text-center">
+                    <div class="mb-4">
+                        <i class="bi bi-clock-history" style="font-size: 2.5rem; color: var(--warning-color);"></i>
+                    </div>
+                    <h5>Your session is about to expire</h5>
+                    <p class="mb-3">You'll be logged out in <span id="timeRemaining" class="fw-bold">300</span> seconds.</p>
+                    <p>Would you like to continue your session?</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-cancel" id="logoutNowBtn">Logout Now</button>
+                    <button type="button" class="btn btn-primary" id="stayLoggedInBtn">Stay Logged In</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+
+        // Updated DOMContentLoaded event function to remove the device selection loading
+
+document.addEventListener('DOMContentLoaded', function() {
+    // Add a debug function to check device data directly from API
+    async function debugDeviceData() {
+        try {
+            const response = await fetch('/api/devices');
+            if (!response.ok) throw new Error(`HTTP Error! Status: ${response.status}`);
+            
+            const devices = await response.json();
+            console.log("⚠️ DEBUG - Raw device data from database:", devices);
+            
+            // Check if the devices array contains all required fields
+            if (devices && devices.length > 0) {
+                const firstDevice = devices[0];
+                console.log("⚠️ DEBUG - First device fields:", {
+                    imei: firstDevice.imei,
+                    name: firstDevice.device_name,
+                    concentration: firstDevice.concentration,
+                    alarm_level: firstDevice.alarm_level,
+                    gas_level: firstDevice.gas_level,
+                    unit: firstDevice.unit,
+                    UTC: firstDevice.UTC,
+                    local_time: firstDevice.local_time
+                });
+            }
+        } catch (error) {
+            console.error("⚠️ DEBUG - Error fetching device data:", error);
+        }
+    }
+    
+    // Run debug immediately
+    debugDeviceData();
+    
+    
+    // Add logout button event listener
+    document.getElementById('logoutBtn').addEventListener('click', function() {
+        // Clear session storage
+        sessionStorage.clear();
+        // Redirect to login page
+        window.location.href = 'login.html';
+    });
+    
+    // Your existing code continues here...
+    loadClients();
+    
+    // Set up event listeners
+    document.getElementById('saveClientBtn').addEventListener('click', addNewClient);
+    document.getElementById('searchInput').addEventListener('input', filterClients);
+    document.getElementById('filterAll').addEventListener('click', () => filterByStatus('all'));
+    document.getElementById('filterActive').addEventListener('click', () => filterByStatus('active'));
+    document.getElementById('filterPending').addEventListener('click', () => filterByStatus('pending'));
+    document.getElementById('filterInactive').addEventListener('click', () => filterByStatus('inactive'));
+    
+    // Initialize session timeout
+    initSessionTimeout();
+    
+    // Set up device management
+    document.getElementById('saveDeviceBtn').addEventListener('click', addNewDevice);
+    document.getElementById('deviceSearchInput').addEventListener('input', filterDevices);
+    document.getElementById('deviceFilterAll').addEventListener('click', () => filterDevicesByStatus('all'));
+    document.getElementById('deviceFilterActive').addEventListener('click', () => filterDevicesByStatus('active'));
+    document.getElementById('deviceFilterMaintenance').addEventListener('click', () => filterDevicesByStatus('maintenance'));
+    document.getElementById('deviceFilterInactive').addEventListener('click', () => filterDevicesByStatus('inactive'));
+    
+    // Remove the call to loadDevicesForSelection()
+    
+    // Add event listener for device tab click
+    document.querySelector('a[href="#devicesPanel"]').addEventListener('click', function() {
+        loadDevices();
+    });
+});
+        // Update the loadClients function to display street address
+
+// Update the loadClients function to display street address
+async function loadClients() {
+  try {
+    const response = await fetch('/api/clients');
+    
+    if (!response.ok) {
+      throw new Error(`HTTP error! Status: ${response.status}`);
+    }
+    
+    const clients = await response.json();
+    console.log("Loaded clients:", clients);
+    
+    const tableBody = document.getElementById('clientTableBody');
+    const noClientsMessage = document.getElementById('noClientsMessage');
+    
+    if (!tableBody) {
+      console.error("Client table body element not found");
+      return;
+    }
+    
+    tableBody.innerHTML = '';
+    
+    if (clients.length === 0) {
+      if (noClientsMessage) noClientsMessage.classList.remove('d-none');
+      return;
+    }
+    
+    if (noClientsMessage) noClientsMessage.classList.add('d-none');
+    
+    clients.forEach(client => {
+      const row = document.createElement('tr');
+      row.dataset.status = client.status;
+      
+      let statusIcon = '';
+      let statusClass = '';
+      
+      switch(client.status) {
+        case 'active':
+          statusClass = 'status-active';
+          statusIcon = 'bi-check-circle-fill';
+          break;
+        case 'inactive':
+          statusClass = 'status-inactive';
+          statusIcon = 'bi-x-circle-fill';
+          break;
+        case 'pending':
+          statusClass = 'status-pending';
+          statusIcon = 'bi-clock-fill';
+          break;
+      }
+      
+      const initials = client.name.split(' ').map(n => n[0]).join('').toUpperCase();
+      
+      // Make the device_id clickable with link to device-details.html
+      const deviceIdDisplay = client.device_id ? 
+        `<a href="device-details.html?id=${encodeURIComponent(client.device_id)}" class="device-id">${client.device_id}</a>` : 
+        '<span class="text-muted">Not assigned</span>';
+      
+      // Get street address from client.address object or directly from client
+      const streetAddress = client.address?.street || client.street || 'N/A';
+      
+      row.innerHTML = `
+        <td><span class="client-id">${client.id}</span></td>
+        <td>
+          <div class="client-name">
+            <div class="client-avatar">${initials}</div>
+            <div>${client.name}</div>
+          </div>
+        </td>
+        <td>
+          <div class="client-email">${client.email}</div>
+          <div class="client-phone">${client.phone || 'N/A'}</div>
+          <div class="client-address"><i class="bi bi-geo-alt text-muted me-1"></i>${streetAddress}</div>
+        </td>
+        <td>
+          <span class="status-badge ${statusClass}">
+            <i class="bi ${statusIcon}"></i> ${client.status}
+          </span>
+        </td>
+        <td>
+          ${deviceIdDisplay}
+        </td>
+        <td>
+          <div class="action-buttons">
+            <button class="btn btn-view view-client" data-id="${client.id}" title="View Details">
+              <i class="bi bi-eye"></i>
+            </button>
+            <button class="btn btn-edit edit-client" data-id="${client.id}" title="Edit Client">
+              <i class="bi bi-pencil"></i>
+            </button>
+          </div>
+        </td>
+      `;
+      
+      tableBody.appendChild(row);
+    });
+    
+    // Add event listeners to the buttons
+    document.querySelectorAll('.view-client').forEach(btn => {
+      btn.addEventListener('click', function() {
+        viewClient(this.dataset.id);
+      });
+    });
+    
+    document.querySelectorAll('.edit-client').forEach(btn => {
+      btn.addEventListener('click', function() {
+        editClient(this.dataset.id);
+      });
+    });
+    
+  } catch (error) {
+    console.error('Error loading clients:', error);
+  }
+}
+
+        // Load devices for client selection dropdown
+         // Update the loadDevices function to display all device parameters
+async function loadDevices() {
+    try {
+        console.log("Fetching devices for index.html...");
+        const response = await fetch('/api/devices');
+        
+        if (!response.ok) {
+            throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+        
+        const devices = await response.json();
+        console.log("Devices data in index:", devices);
+        
+        const tableBody = document.getElementById('deviceTableBody');
+        const noDevicesMessage = document.getElementById('noDevicesMessage');
+        
+        if (!tableBody) return;
+        
+        tableBody.innerHTML = '';
+        
+        if (devices.length === 0) {
+            noDevicesMessage?.classList.remove('d-none');
+            return;
+        }
+        
+        noDevicesMessage?.classList.add('d-none');
+        
+        devices.forEach(device => {
+            const row = document.createElement('tr');
+            
+            // Use alarm_level for status filtering
+            row.dataset.alarmLevel = device.alarm_level || 'normal';
+            
+            let statusClass = '';
+            let statusIcon = '';
+            
+            switch(device.alarm_level) {
+                case 'normal':
+                    statusClass = 'status-active';
+                    statusIcon = 'bi-check-circle-fill';
+                    break;
+                case 'warning':
+                    statusClass = 'status-maintenance';
+                    statusIcon = 'bi-exclamation-triangle-fill';
+                    break;
+                case 'danger':
+                    statusClass = 'status-inactive';
+                    statusIcon = 'bi-exclamation-circle-fill';
+                    break;
+                default:
+                    statusClass = 'status-inactive';
+                    statusIcon = 'bi-question-circle-fill';
+            }
+            
+            // Format the dates for display
+            const utcDate = device.UTC ? new Date(device.UTC).toLocaleString() : 'N/A';
+            const localTime = device.local_time ? new Date(device.local_time).toLocaleString() : 'N/A';
+            
+            // Format numeric values
+            const concentration = parseFloat(device.concentration || 0).toFixed(2);
+            const gasLevel = parseFloat(device.gas_level || 0).toFixed(2);
+            
+            row.innerHTML = `
+                <td>${device.imei || 'N/A'}</td>
+                <td>
+                    <div class="device-name">
+                        <div class="device-icon"><i class="bi bi-hdd-network"></i></div>
+                        <div>${device.device_name || 'N/A'}</div>
+                    </div>
+                </td>
+                <td>${concentration}</td>
+                <td>
+                    <span class="status-badge ${statusClass}">
+                        <i class="bi ${statusIcon}"></i> ${device.alarm_level || 'normal'}
+                    </span>
+                </td>
+                <td>${gasLevel}</td>
+                <td>${device.unit || 'ppm'}</td>
+                <td>${utcDate}</td>
+                <td>${localTime}</td>
+                <td>
+                    <div class="action-buttons">
+                        <button class="btn btn-view view-device" data-id="${device.device_name}" title="View Details">
+                            <i class="bi bi-eye"></i>
+                        </button>
+                        <button class="btn btn-edit edit-device" data-id="${device.imei}" title="Edit Device">
+                            <i class="bi bi-pencil"></i>
+                        </button>
+                   
+                    </div>
+                </td>
+            `;
+            
+            tableBody.appendChild(row);
+        });
+        
+        // Add event listeners to the buttons
+        document.querySelectorAll('.view-device').forEach(btn => {
+            btn.addEventListener('click', function() {
+                const deviceId = this.dataset.id;
+                window.location.href = `device-details.html?id=${deviceId}`;
+            });
+        });
+        
+        document.querySelectorAll('.edit-device').forEach(btn => {
+            btn.addEventListener('click', function() {
+                editDevice(this.dataset.id);
+            });
+        });
+        
+        document.querySelectorAll('.delete-device').forEach(btn => {
+            btn.addEventListener('click', function() {
+                if(confirm('Are you sure you want to delete this device?')) {
+                    deleteDevice(this.dataset.id);
+                }
+            });
+        });
+        
+    } catch (error) {
+        console.error('Error loading devices:', error);
+        const tableBody = document.getElementById('deviceTableBody');
+        if (tableBody) {
+            tableBody.innerHTML = `
+                <tr>
+                    <td colspan="9" class="text-center text-danger">
+                        <i class="bi bi-exclamation-triangle-fill me-2"></i>
+                        Error loading devices: ${error.message}
+                    </td>
+                </tr>
+            `;
+        }
+    }
+}
+
+
+// Add this function to handle device deletion
+async function deleteDevice(imei) {
+    try {
+        const response = await fetch(`/api/devices/${imei}`, {
+            method: 'DELETE'
+        });
+        
+        if (!response.ok) {
+            throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+        
+        // Reload the devices list
+        loadDevices();
+        
+        console.log(`Device ${imei} deleted successfully`);
+    } catch (error) {
+        console.error('Error deleting device:', error);
+        alert(`Error deleting device: ${error.message}`);
+    }
+}
+
+
+
+      //addNewDevice
+    async function addNewDevice() {
+    const imei = document.getElementById('deviceImei').value;
+    const device_name = document.getElementById('deviceName').value;
+    const concentration = parseFloat(document.getElementById('deviceConcentration').value) || 0;
+    const alarm_level = document.getElementById('deviceAlarmLevel').value;
+    const gas_level = parseFloat(document.getElementById('deviceGasLevel').value) || 0;
+    const unit = document.getElementById('deviceUnit').value;
+    
+    if (!imei || !device_name) {
+        alert('IMEI and Device Name are required fields');
+        return;
+    }
+    
+    try {
+        console.log('Adding new device:', { imei, device_name, concentration, alarm_level, gas_level, unit });
+        
+        const response = await fetch('/api/devices', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                imei,
+                device_name,
+                concentration,
+                alarm_level,
+                gas_level,
+                unit
+            })
+        });
+        
+        if (!response.ok) {
+            throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+        
+        // Get the newly created device
+        const newDevice = await response.json();
+        console.log('Device added successfully:', newDevice);
+        
+        // Close the modal
+        const modal = bootstrap.Modal.getInstance(document.getElementById('addDeviceModal'));
+        modal.hide();
+        
+        // Clear the form
+        document.getElementById('addDeviceForm').reset();
+        
+        // Refresh the devices list if we're on the devices tab
+        if (document.querySelector('a[href="#devicesPanel"].active')) {
+            loadDevices();
+        }
+        
+        alert('Device added successfully!');
+    } catch (error) {
+        console.error('Error adding device:', error);
+        alert(`Error adding device: ${error.message}`);
+    }
+}
+
+
+        // Add a new client
+     async function addNewClient() {
+  try {
+    // Get form values
+    const name = document.getElementById('clientName').value.trim();
+    const email = document.getElementById('clientEmail').value.trim();
+    const phone = document.getElementById('clientPhone').value.trim();
+    const street = document.getElementById('clientStreet').value.trim();
+    const status = document.getElementById('clientStatus').value;
+    const device_id = document.getElementById('clientDevice').value.trim();
+    const password = document.getElementById('clientPassword').value || 'Megha@9000';
+    
+    // Validate required fields
+    if (!name || !email) {
+      alert('Name and email are required!');
+      return;
+    }
+    
+    console.log("Adding new client with data:", {
+      name, email, phone, street, status, device_id, password
+    });
+    
+    // Prepare the client data object
+    const clientData = {
+      name,
+      email,
+      phone: phone || null,
+      street: street || null,
+      status,
+      password
+    };
+    
+    // Add device_id if provided
+    if (device_id) {
+      clientData.device_id = device_id;
+    }
+    
+    // Send request to API
+    const response = await fetch('/api/clients', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(clientData)
+    });
+    
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({}));
+      throw new Error(errorData.message || `HTTP error! Status: ${response.status}`);
+    }
+    
+    // Get the new client data
+    const newClient = await response.json();
+    console.log("Client added successfully:", newClient);
+    
+    // Close the add client modal
+    const addModal = bootstrap.Modal.getInstance(document.getElementById('addClientModal'));
+    addModal.hide();
+    
+    // Display success modal with device ID
+    document.getElementById('newClientNameDisplay').textContent = newClient.name;
+    document.getElementById('newDeviceIdDisplay').textContent = newClient.device_id || 'Not assigned';
+    
+    // Show the success modal
+    const successModal = new bootstrap.Modal(document.getElementById('successModal'));
+    successModal.show();
+    
+    // Reset the form
+    document.getElementById('addClientForm').reset();
+    
+    // Reset password field to default value
+    document.getElementById('clientPassword').value = 'Megha@9000';
+    
+    // Reload the client list
+    loadClients();
+  } catch (error) {
+    console.error('Error adding client:', error);
+    alert(`Failed to add client: ${error.message}`);
+  }
+}
+
+        // Filter clients based on search input
+        function filterClients() {
+            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+            const rows = document.querySelectorAll('#clientTableBody tr');
+            
+            rows.forEach(row => {
+                const name = row.querySelector('.client-name').textContent.toLowerCase();
+                const email = row.querySelector('.client-email').textContent.toLowerCase();
+                const phone = row.querySelector('.client-phone').textContent.toLowerCase();
+                
+                if (name.includes(searchTerm) || email.includes(searchTerm) || phone.includes(searchTerm)) {
+                    row.style.display = '';
+                } else {
+                    row.style.display = 'none';
+                }
+            });
+        }
+
+        // Filter by status
+        function filterByStatus(status) {
+            // Update active button
+            document.querySelectorAll('#clientsPanel .filter-buttons .btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            
+            if (status === 'all') {
+                document.getElementById('filterAll').classList.add('active');
+            } else if (status === 'active') {
+                document.getElementById('filterActive').classList.add('active');
+            } else if (status === 'pending') {
+                document.getElementById('filterPending').classList.add('active');
+            } else if (status === 'inactive') {
+                document.getElementById('filterInactive').classList.add('active');
+            }
+            
+            const rows = document.querySelectorAll('#clientTableBody tr');
+            
+            rows.forEach(row => {
+                if (status === 'all' || row.dataset.status === status) {
+                    row.style.display = '';
+                } else {
+                    row.style.display = 'none';
+                }
+            });
+        }
+
+        // View client details (placeholder)
+        function viewClient(id) {
+            alert(`View client ${id} details`);
+            // In a real implementation, you would fetch client details and show in a modal
+        }
+
+        // Edit client (placeholder)
+        function editClient(id) {
+            alert(`Edit client ${id}`);
+            // In a real implementation, you would fetch client details and populate a form
+        }
+
+        // Function to load devices from the API
+        async function loadDevices() {
+    try {
+        const response = await fetch('/api/devices');
+        const devices = await response.json();
+        
+        const tableBody = document.getElementById('deviceTableBody');
+        const noDevicesMessage = document.getElementById('noDevicesMessage');
+        
+        if (!tableBody) return;
+        
+        tableBody.innerHTML = '';
+        
+        if (devices.length === 0) {
+            noDevicesMessage?.classList.remove('d-none');
+            return;
+        }
+        
+        noDevicesMessage?.classList.add('d-none');
+        
+        devices.forEach(device => {
+            const row = document.createElement('tr');
+            row.dataset.status = device.status;
+            
+            let statusIcon = '';
+            let statusClass = '';
+            
+            switch(device.status) {
+                case 'active':
+                    statusClass = 'status-active';
+                    statusIcon = 'bi-check-circle-fill';
+                    break;
+                case 'inactive':
+                    statusClass = 'status-inactive';
+                    statusIcon = 'bi-x-circle-fill';
+                    break;
+                case 'maintenance':
+                    statusClass = 'status-maintenance';
+                    statusIcon = 'bi-tools';
+                    break;
+            }
+            
+            row.innerHTML = `
+                <td><span class="device-id">${device.id}</span></td>
+                <td>
+                    <div class="device-name">
+                        <div class="device-icon"><i class="bi bi-hdd-network"></i></div>
+                        <div>${device.device_name}</div>
+                    </div>
+                </td>
+                <td>
+                    <span class="status-badge ${statusClass}">
+                        <i class="bi ${statusIcon}"></i> ${device.status}
+                    </span>
+                </td>
+                <td>
+                    <div class="action-buttons">
+                        <button class="btn btn-view view-device" data-id="${device.id}" title="View Details">
+                            <i class="bi bi-eye"></i>
+                        </button>
+                        <button class="btn btn-edit edit-device" data-id="${device.id}" title="Edit Device">
+                            <i class="bi bi-pencil"></i>
+                        </button>
+                    </div>
+                </td>
+            `;
+            
+            tableBody.appendChild(row);
+        });
+        
+        // Add event listeners
+        document.querySelectorAll('.view-device').forEach(btn => {
+            btn.addEventListener('click', () => viewDevice(btn.dataset.id));
+        });
+        
+        document.querySelectorAll('.edit-device').forEach(btn => {
+            btn.addEventListener('click', () => editDevice(btn.dataset.id));
+        });
+        
+    } catch (error) {
+        console.error('Error loading devices:', error);
+    }
+}
+
+// Add this function
+async function loadDevicesForSelection() {
+  try {
+    const response = await fetch('/api/devices');
+    const devices = await response.json();
+    
+    const clientDeviceSelect = document.getElementById('clientDevice');
+    if (!clientDeviceSelect) return;
+    
+    // Clear existing options except the first one
+    while (clientDeviceSelect.options.length > 1) {
+      clientDeviceSelect.remove(1);
+    }
+    
+    // Add device options
+    devices.forEach(device => {
+      const option = document.createElement('option');
+      option.value = device.device_name;
+      option.textContent = device.device_name;
+      clientDeviceSelect.appendChild(option);
+    });
+  } catch (error) {
+    console.error('Error loading devices for selection:', error);
+  }
+}
+
+       // Update the loadDevices function in index.html to use the new schema
+
+// Function to load devices from the API (for index.html)
+// filepath: c:\Users\Lenovo\Downloads\device client\public\index.html
+// Completely revised loadDevices function to ensure all fields are displayed
+async function loadDevices() {
+    try {
+        console.log("Fetching devices from database...");
+        
+        const response = await fetch('/api/devices');
+        
+        if (!response.ok) {
+            throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+        
+        const devices = await response.json();
+        console.log("Raw device data:", devices);
+        
+        const tableBody = document.getElementById('deviceTableBody');
+        if (!tableBody) {
+            console.error("Device table body element not found");
+            return;
+        }
+        
+        // Clear previous content
+        tableBody.innerHTML = '';
+        
+        // Show message if no devices found
+        if (!devices || devices.length === 0) {
+            const noDevicesMessage = document.getElementById('noDevicesMessage');
+            if (noDevicesMessage) noDevicesMessage.classList.remove('d-none');
+            tableBody.innerHTML = '<tr><td colspan="9" class="text-center">No devices found in database</td></tr>';
+            return;
+        }
+        
+        // Hide the no devices message
+        const noDevicesMessage = document.getElementById('noDevicesMessage');
+        if (noDevicesMessage) noDevicesMessage.classList.add('d-none');
+        
+        // Loop through all devices and create table rows
+        devices.forEach(device => {
+            // Debug logging
+            console.log("Processing device:", device);
+            
+            // Ensure all values are properly accessed
+            const imei = device.imei || 'N/A';
+            const deviceName = device.device_name || 'N/A';
+            const concentration = device.concentration !== undefined && device.concentration !== null ? 
+                parseFloat(device.concentration).toFixed(2) : '0.00';
+            const alarmLevel = device.alarm_level || 'normal';
+            const gasLevel = device.gas_level !== undefined && device.gas_level !== null ? 
+                parseFloat(device.gas_level).toFixed(2) : '0.00';
+            const unit = device.unit || 'ppm';
+            
+            // Format dates
+            let utcTime = 'N/A';
+            let localTime = 'N/A';
+            
+            try {
+                if (device.UTC) {
+                    utcTime = new Date(device.UTC).toLocaleString();
+                }
+                if (device.local_time) {
+                    localTime = new Date(device.local_time).toLocaleString();
+                }
+            } catch (e) {
+                console.warn('Error formatting dates for device', device.imei, e);
+            }
+            
+            // Determine status class based on alarm level
+            let statusClass = 'status-inactive';
+            let statusIcon = 'bi-question-circle-fill';
+            
+            if (alarmLevel === 'normal') {
+                statusClass = 'status-active';
+                statusIcon = 'bi-check-circle-fill';
+            } else if (alarmLevel === 'warning') {
+                statusClass = 'status-maintenance';
+                statusIcon = 'bi-exclamation-triangle-fill';
+            } else if (alarmLevel === 'danger') {
+                statusClass = 'status-inactive';
+                statusIcon = 'bi-exclamation-circle-fill';
+            }
+            
+            // Create the row
+            const row = document.createElement('tr');
+            row.setAttribute('data-alarm-level', alarmLevel);
+            
+            // Set the row content
+            row.innerHTML = `
+                <td>${imei}</td>
+                <td>
+                    <div class="device-name">
+                        <div class="device-icon"><i class="bi bi-hdd-network"></i></div>
+                        <div>${deviceName}</div>
+                    </div>
+                </td>
+                <td>${concentration}</td>
+                <td>
+                    <span class="status-badge ${statusClass}">
+                        <i class="bi ${statusIcon}"></i> ${alarmLevel}
+                    </span>
+                </td>
+                <td>${gasLevel}</td>
+                <td>${unit}</td>
+                <td>${utcTime}</td>
+                <td>${localTime}</td>
+                <td>
+                    <div class="action-buttons">
+                        <button class="btn btn-view" onclick="viewDevice('${deviceName}')" title="View Details">
+                            <i class="bi bi-eye"></i>
+                        </button>
+                        <button class="btn btn-edit" onclick="editDevice('${imei}')" title="Edit Device">
+                            <i class="bi bi-pencil"></i>
+                        </button>
+                     
+                    </div>
+                </td>
+            `;
+            
+            tableBody.appendChild(row);
+        });
+        
+        console.log("Devices table populated successfully");
+        
+    } catch (error) {
+        console.error('Error loading devices:', error);
+        const tableBody = document.getElementById('deviceTableBody');
+        if (tableBody) {
+            tableBody.innerHTML = `
+                <tr>
+                    <td colspan="9" class="text-center">
+                        <div class="alert alert-danger">
+                            <i class="bi bi-exclamation-triangle-fill me-2"></i>
+                            Error loading devices: ${error.message}
+                        </div>
+                    </td>
+                </tr>
+            `;
+        }
+    }
+}
+
+        // Function to filter devices by search term
+        function filterDevices() {
+            const searchTerm = document.getElementById('deviceSearchInput')?.value.toLowerCase();
+            if (!searchTerm) return;
+            
+            const rows = document.querySelectorAll('#deviceTableBody tr');
+            
+            rows.forEach(row => {
+                const deviceName = row.querySelector('.device-name')?.textContent.toLowerCase();
+                
+                
+                if (deviceName?.includes(searchTerm) ) {
+                    row.style.display = '';
+                } else {
+                    row.style.display = 'none';
+                }
+            });
+        }
+
+        // Function to filter devices by status
+        function filterDevicesByStatus(status) {
+            // Update active filter button
+            const filterButtons = document.querySelectorAll('#devicesPanel .filter-buttons .btn');
+            filterButtons.forEach(btn => btn.classList.remove('active'));
+            
+            if (status === 'all') {
+                document.getElementById('deviceFilterAll')?.classList.add('active');
+            } else if (status === 'active') {
+                document.getElementById('deviceFilterActive')?.classList.add('active');
+            } else if (status === 'maintenance') {
+                document.getElementById('deviceFilterMaintenance')?.classList.add('active');
+            } else if (status === 'inactive') {
+                document.getElementById('deviceFilterInactive')?.classList.add('active');
+            }
+            
+            const rows = document.querySelectorAll('#deviceTableBody tr');
+            
+            rows.forEach(row => {
+                if (status === 'all' || row.dataset.status === status) {
+                    row.style.display = '';
+                } else {
+                    row.style.display = 'none';
+                }
+            });
+        }
+
+        // Function to view device details
+       function viewDevice(deviceName) {
+    console.log("Viewing device details:", deviceName);
+    window.location.href = `device-details.html?id=${encodeURIComponent(deviceName)}`;
+}
+ 
+    // Add editDevice function
+    async function editDevice(imei) {
+        try {
+            console.log("Fetching device data for editing:", imei);
+            const response = await fetch(`/api/devices/${imei}`);
+            
+            if (!response.ok) {
+                throw new Error(`HTTP error! Status: ${response.status}`);
+            }
+            
+            const device = await response.json();
+            console.log("Device data for editing:", device);
+            
+            // Set values in the edit modal form
+            document.getElementById('editDeviceImei').value = device.imei || '';
+            document.getElementById('editDeviceName').value = device.device_name || '';
+            document.getElementById('editDeviceConcentration').value = device.concentration || '0';
+            document.getElementById('editDeviceAlarmLevel').value = device.alarm_level || 'normal';
+            document.getElementById('editDeviceGasLevel').value = device.gas_level || '0';
+            document.getElementById('editDeviceUnit').value = device.unit || 'ppm';
+            
+            // Open the edit modal
+            const editDeviceModal = new bootstrap.Modal(document.getElementById('editDeviceModal'));
+            editDeviceModal.show();
+            
+        } catch (error) {
+            console.error("Error fetching device data for edit:", error);
+            alert(`Error loading device data: ${error.message}`);
+        }
+    }
+        // Session management configuration
+        const SESSION_TIMEOUT = 60 * 60 * 1000; // 1 hour (60 minutes * 60 seconds * 1000ms)
+        const WARNING_BEFORE_TIMEOUT = 5 * 60 * 1000; // Show warning 5 minutes before timeout
+        const CHECK_INTERVAL = 30 * 1000; // Check every 30 seconds
+        
+        let sessionTimeoutTimer;
+        let countdownInterval;
+        let sessionWarningModal;
+        
+        // Function to initialize session management
+        function initSessionTimeout() {
+            // Initialize the modal
+            sessionWarningModal = new bootstrap.Modal(document.getElementById('sessionExpiryModal'));
+            
+            // Set up buttons
+            document.getElementById('stayLoggedInBtn').addEventListener('click', extendSession);
+            document.getElementById('logoutNowBtn').addEventListener('click', logout);
+            
+            // Start monitoring the session
+            resetSessionTimeout();
+            
+            // Set up activity monitoring
+            const events = ['mousedown', 'keydown', 'scroll', 'click', 'touchstart'];
+            events.forEach(event => {
+                document.addEventListener(event, handleUserActivity, { passive: true });
+            });
+            
+            // Also check on initial load
+            checkSession();
+            
+            // Start periodic checks
+            setInterval(checkSession, CHECK_INTERVAL);
+        }
+        
+        // Function to handle user activity
+        function handleUserActivity() {
+            sessionStorage.setItem('lastActivity', new Date().getTime().toString());
+            
+            // If the warning modal is open, extend the session
+            if (document.getElementById('sessionExpiryModal').classList.contains('show')) {
+                extendSession();
+            }
+        }
+        
+        // Check if session is still valid
+        function checkSession() {
+            const expiryTime = parseInt(sessionStorage.getItem('sessionExpiry'));
+            const now = new Date().getTime();
+            
+            if (now >= expiryTime) {
+                endSession();
+            } else if (expiryTime - now <= WARNING_BEFORE_TIMEOUT && 
+                       !document.getElementById('sessionExpiryModal').classList.contains('show')) {
+                showSessionWarning();
+            }
+        }
+        
+        // Reset the session timeout
+        function resetSessionTimeout() {
+            const now = new Date().getTime();
+            const newExpiry = now + SESSION_TIMEOUT;
+            sessionStorage.setItem('sessionExpiry', newExpiry.toString());
+            sessionStorage.setItem('lastActivity', now.toString());
+            
+            // Clear any existing timeout
+            if (sessionTimeoutTimer) {
+                clearTimeout(sessionTimeoutTimer);
+            }
+            
+            // Set timeout for session warning
+            const timeUntilWarning = SESSION_TIMEOUT - WARNING_BEFORE_TIMEOUT;
+            sessionTimeoutTimer = setTimeout(showSessionWarning, timeUntilWarning);
+        }
+        
+        // Show session expiry warning
+        function showSessionWarning() {
+            const expiryTime = parseInt(sessionStorage.getItem('sessionExpiry'));
+            const now = new Date().getTime();
+            let secondsLeft = Math.max(0, Math.floor((expiryTime - now) / 1000));
+            
+            // Update countdown display
+            document.getElementById('timeRemaining').textContent = secondsLeft;
+            
+            // Show the modal
+            sessionWarningModal.show();
+            
+            // Start the countdown
+            if (countdownInterval) clearInterval(countdownInterval);
+            countdownInterval = setInterval(() => {
+                secondsLeft -= 1;
+                document.getElementById('timeRemaining').textContent = secondsLeft;
+                
+                if (secondsLeft <= 0) {
+                    clearInterval(countdownInterval);
+                    endSession();
+                }
+            }, 1000);
+        }
+        
+        // Extend the session
+        function extendSession() {
+            // Stop the countdown
+            if (countdownInterval) clearInterval(countdownInterval);
+            
+            // Reset the session timeout
+            resetSessionTimeout();
+            
+            // Hide the warning modal
+            if (document.getElementById('sessionExpiryModal').classList.contains('show')) {
+                sessionWarningModal.hide();
+            }
+            
+            // Call API to extend session if you're using JWT or server-side sessions
+            fetch('/api/session/refresh', { method: 'POST' })
+                .then(response => response.json())
+                .then(data => console.log('Session refreshed', data))
+                .catch(error => console.error('Error refreshing session', error));
+        }
+        
+        // End the session
+        function endSession() {
+            // Clear intervals and timeouts
+            if (countdownInterval) clearInterval(countdownInterval);
+            if (sessionTimeoutTimer) clearTimeout(sessionTimeoutTimer);
+            
+            // Hide modal if visible
+            if (document.getElementById('sessionExpiryModal').classList.contains('show')) {
+                sessionWarningModal.hide();
+            }
+            
+            // Flag that session expired (to show message on login page)
+            sessionStorage.setItem('sessionExpired', 'true');
+            
+            // Logout
+            logout();
+        }
+        
+        // Logout function
+        function logout() {
+            // Clear session storage (except sessionExpired flag)
+            const sessionExpired = sessionStorage.getItem('sessionExpired');
+            sessionStorage.clear();
+            if (sessionExpired === 'true') {
+                sessionStorage.setItem('sessionExpired', 'true');
+            }
+            
+            // Redirect to login page
+            window.location.href = 'login.html';
+        }
+    </script>
+</body>
+</html>
